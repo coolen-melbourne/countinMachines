@@ -1,0 +1,50 @@
+{{#if myProducts.length}}
+<div class="product-row">
+  {{#each myProducts}}
+  <div class="product-card">
+    {{#if isHot}}
+    <div class="label"></div>
+    {{/if}}
+
+    <div class="image-wrapper">
+      <div class="image-container">
+        <img src="{{image}}" alt="">
+      </div>
+    </div>
+
+    <div class="product-info">
+      <div class="category">{{category}}</div>
+      <h2 class="product-title">{{serial}}</h2>
+      <p class="description">{{name}}</p>
+
+      {{#if features}}
+      <div class="features">
+        {{#each features}}
+        <span class="feature">{{serial}}</span>
+        {{/each}}
+      </div>
+      {{/if}}
+      
+      <div class="product-meta">
+        {{#if rating}}
+        <div class="rating-stars">
+          {{!-- Fix: rating uchun loop helper kerak bo‘lsa, serverda yaratish yoki stars array yuborish --}}
+          {{#each stars}}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="0.5">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          {{/each}}
+          <span class="review-count">{{reviews}} Reviews</span>
+        </div>
+        {{/if}}
+        <div class="stock-status">{{stock}}</div>
+      </div>
+
+      <small class="date">{{ currentDateTime}}</small>
+    </div>
+  </div>
+  {{/each}}
+</div>
+{{else}}
+<p class="empty">Mahsulot yo‘q</p>
+{{/if}}

@@ -1,0 +1,43 @@
+<!-- DARK MODE TOGGLE -->
+<button id="themeToggle" class="theme-toggle">
+  <i class="fas fa-moon"></i>
+</button>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="logo">
+    <span class="logo-text text-logo"><i class="fa-brands fa-blackberry"></i> machine</span>
+  </div>
+
+  <div class="menu">
+    <a href="/" class="item"><i class="fas fa-home"></i><span class="text">Asosiy sahifa</span></a>
+    <a href="/machines" class="item"><i class="fas fa-tools"></i><span class="text">Mashinalar</span></a>
+
+    {{#if token}}
+  <!-- Faqat login qilgan foydalanuvchi ko'radi -->
+  <a href="/add" class="item add-btn"><i class="fas fa-plus-circle"></i><span class="text">Qo'shish</span></a>
+  <a href="/logout" class="item logout"><i class="fas fa-sign-out-alt"></i><span class="text">Chiqish</span></a>
+{{else}}
+  <!-- Login qilmagan foydalanuvchi ko'radi -->
+  <a href="/login" class="item login"><i class="fas fa-sign-in-alt"></i><span class="text">Kirish</span></a>
+  <a href="/register" class="item register"><i class="fas fa-user-plus"></i><span class="text">Registratsiya</span></a>
+{{/if}}
+  </div>
+</nav>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="bottom-nav" id="bottomNav">
+  <a href="/" class="bottom-item"><i class="fas fa-home"></i> Asosiy sahifa</a>
+  <a href="/machines" class="bottom-item"><i class="fas fa-tools"></i> Mashinalar</a>
+
+  {{#if token}}
+    <!-- Login bo'lsa: Qo'shish + Chiqish -->
+    <a href="/add" class="bottom-item add-btn"><i class="fas fa-plus-circle"></i> Qo'shish</a>
+    <a href="/logout" style="color: red;" class="bottom-item"><i class="fas fa-sign-out-alt"></i> Chiqish</a>
+  {{else}}
+    <!-- Login qilmagan foydalanuvchi: Kirish + Registratsiya -->
+    <a href="/login" class="bottom-item"><i class="fas fa-sign-in-alt"></i> Kirish</a>
+    <a href="/register" class="bottom-item"><i class="fas fa-user-plus"></i> Registratsiya</a>
+  {{/if}}
+</div>
+

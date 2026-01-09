@@ -1,0 +1,155 @@
+<style>
+  /* Basic Reset */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  body {
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-container {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-container h2 {
+    margin-bottom: 25px;
+    color: #333;
+  }
+
+  .login-container input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .login-container input:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 8px rgba(79, 172, 254, 0.5);
+    outline: none;
+  }
+
+  .login-container button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .login-container button:hover {
+    background: linear-gradient(90deg, #00f2fe, #4facfe);
+  }
+
+  .login-container .links {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+
+  .login-container .links a {
+    color: #4facfe;
+    text-decoration: none;
+    transition: 0.3s;
+  }
+
+  .login-container .links a:hover {
+    text-decoration: underline;
+  }
+
+  /* ===== Soft White Toast with Brand Color ===== */
+  .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #fff;
+    color: #4facfe; /* matn rangi brendingiz rangi */
+    padding: 14px 22px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* yumshoq shadow */
+    border-left: 5px solid #4facfe; /* chap tomonda accent line */
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.5s ease;
+    z-index: 9999;
+    min-width: 250px;
+    text-align: center;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 500px) {
+    .login-container {
+      padding: 30px 20px;
+    }
+    .login-container h2 {
+      font-size: 22px;
+    }
+    .login-container input, .login-container button {
+      font-size: 14px;
+      padding: 10px;
+    }
+    .toast {
+      min-width: 200px;
+      padding: 10px 15px;
+      top: 15px;
+      right: 15px;
+    }
+  }
+</style>
+
+<div class="login-container">
+  <h2>Kirish</h2>
+  <form action="/login" method="POST">
+    <input name="email" type="email" placeholder="Email" required>
+    <input name="password" type="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+  <div class="links">
+    <p><a href="#">Forgot Password?</a> | <a href="#">Sign Up</a></p>
+  </div>
+</div>
+
+{{#if loginError}}
+<div class="toast" id="toast">{{loginError}}</div>
+{{/if}}
+
+<script>
+  const toast = document.getElementById('toast');
+  if (toast) {
+    setTimeout(() => toast.classList.add('show'), 100);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-20px)';
+      setTimeout(() => toast.remove(), 500);
+    }, 4000);
+  }
+</script>

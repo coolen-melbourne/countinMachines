@@ -1,0 +1,112 @@
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .register-container {
+      background-color: #fff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      width: 400px;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .register-container h2 {
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    .register-container input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .register-container input:focus {
+      border-color: #43e97b;
+      box-shadow: 0 0 8px rgba(67,233,123,0.5);
+      outline: none;
+    }
+
+    .register-container button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background-color: #4facfe;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .register-container button:hover {
+      background-color: #00f2fe;
+    }
+
+    .register-container .links {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .register-container .links a {
+      color: #43e97b;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .register-container .links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .register-container {
+        padding: 30px 20px;
+      }
+      .register-container h2 {
+        font-size: 22px;
+      }
+      .register-container input, .register-container button {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+  </style>
+
+  {{#if registerError}}
+  <p style="color:red; margin-bottom:10px;">{{registerError}}</p>
+  {{/if}}
+  <div class="register-container">
+    <h2>Register</h2>
+    <form action="/register" method="POST">
+      <input type="text" name="firstName" placeholder="First Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="links">
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+  </div>
+

@@ -3,6 +3,11 @@ import multer from 'multer'
 import Product from '../models/Product.js'
 import Counter from '../models/Counter.js'
 import userMiddleware from '../middleware/user.js'
+import ExcelJS from 'exceljs'
+
+
+
+
 
 const router = Router()
 const upload = multer({ dest: 'uploads/' })
@@ -130,5 +135,56 @@ router.get('/products/:id', async (req, res) => {
     product
   })
 })
+
+
+// ------------------------
+// EXPORT EXCEL
+// ------------------------
+router.get('/export/excel', async (req, res) => {
+  try {
+    const products = await Product.find().sort({ number: 1 }).lean()
+
+    const workbook = new ExcelJS.Workbook()
+    const sheet = workbook.addWorksheet('Mashinalar')
+
+    sheet.columns = [
+      { header: '№', key: 'number', width: 5 },
+      { header: 'Seriya raqami', key: 'serial', width: 20 },
+      { header: 'Mashina nomi', key: 'machineName', width: 20 },
+      { header: 'Model', key: 'modelNumber', width: 15 },
+      { header: 'Ro‘yxatga oluvchi', key: 'name', width: 20 },
+      { header: 'Izoh', key: 'comment', width: 25 },
+      { header: 'Sana', key: 'date', width: 15 }
+    ]
+
+    products.forEach(p => {
+      sheet.addRow({
+        number: p.number,
+        serial: p.serial,
+        machineName: p.machineName,
+        modelNumber: p.modelNumber,
+        name: p.name,
+        comment: p.comment || '',
+        date: new Date(p.date).toLocaleDateString('uz-UZ')
+      })
+    })
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=mashinalar.xlsx'
+    )
+
+    await workbook.xlsx.write(res)
+    res.end()
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Excel error')
+  }
+})
+
 
 export default router

@@ -1,4 +1,5 @@
 <div id="product-list">
+  
   {{#if products.length}}
   <div class="product-row" id="product-row">
     {{#each products}}
@@ -20,7 +21,7 @@
         <p class="description">Ro'yxatga oluvchi: <span style="color:red;">{{name}}</span></p>
 
         <div style="display:flex; gap:10px;">
-          <button class="btn view-btn"><i class="fa-solid fa-print fa-bounce"></i> Print</button>
+          <button class="btn view-btn"><i class="fa-solid fa-print "></i> Print</button>
 
           {{#ifequal user ../userId}}
           <div style="display:flex; gap:10px;">
@@ -120,7 +121,7 @@ function attachEvents() {
 <style>
 body { font-family: Arial; margin:0; padding:0; }
 .sticker { width:2.37in; height:1.60in; border:1px solid #000; padding:0.05in; display:flex; justify-content:space-between; align-items:center; box-sizing:border-box;}
-.info { font-size:10pt; line-height:1.2; }
+.info { font-size:5pt; line-height:1.2; }
 .info p { margin:1px 0; }
 .qr { width:1in; height:1in; }
 button.print-btn { margin-top:5px; padding:4px 8px; font-size:10pt; }

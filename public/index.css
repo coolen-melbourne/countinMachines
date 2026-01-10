@@ -10,7 +10,7 @@
 .sidebar.hide{transform:translateX(-100%);opacity:0;}
 
 /* LOGO */
-.logo{display:flex;align-items:center;justify-content:space-between;font-size:1.7rem;color:#3162e8}
+.logo{display:flex;align-items:center;justify-content:space-between;font-size:1.2rem;color:#3162e8}
 .logo-text{margin-left:8px;transition:0.3s;}
 .sidebar.collapsed .logo-text{display:none;}
 .collapse-btn{background:none;border:none;cursor:pointer;color:#3162e8;font-size:1rem}

@@ -1,5 +1,4 @@
 <div id="product-list">
-  
   {{#if products.length}}
   <div class="product-row" id="product-row">
     {{#each products}}
@@ -16,12 +15,11 @@
 
       <div class="product-info">
         <h3 style="color:#0a7cff;font-weight:bold;">№ {{@index}}</h3>
-
         <p>Seriya raqami: <span style="color:red;">{{serial}}</span></p>
-        <p class="description">Ro'yxatga oluvchi: <span style="color:red;">{{name}}</span></p>
+        <p>Ro'yxatga oluvchi: <span style="color:red;">{{name}}</span></p>
 
         <div style="display:flex; gap:10px;">
-          <button class="btn view-btn"><i class="fa-solid fa-print "></i> Print</button>
+          <button class="btn view-btn"><i class="fa-solid fa-print"></i> Print</button>
 
           {{#ifequal user ../userId}}
           <div style="display:flex; gap:10px;">
@@ -47,7 +45,6 @@
 </div>
 
 <script>
-// SSE
 const evtSource = new EventSource('/events');
 
 evtSource.onmessage = (e) => {
@@ -55,44 +52,36 @@ evtSource.onmessage = (e) => {
   const container = document.getElementById('product-row');
   if (!container) return;
 
-  const products = data.products;
-  const currentUserId = data.currentUserId;
+  const { products, currentUserId, baseUrl } = data;
 
   container.innerHTML = products.map((p, i) => `
     <div class="product-card"
-         data-id="${p._id}"
-         data-machine="${p.machineName || ''}"
-         data-model="${p.modelNumber || ''}"
-         data-serial="${p.serial || ''}"
-         data-name="${p.name || ''}"
-         data-date="${p.date || ''}"
-         data-url="${window.location.origin}/products/${p._id}">
+      data-id="${p._id}"
+      data-serial="${p.serial || ''}"
+      data-name="${p.name || ''}"
+      data-date="${p.date || ''}"
+      data-url="${baseUrl}/products/${p._id}">
 
       <div class="image-wrapper">
-        <img src="/uploads/${p.image || 'default.png'}" alt="${p.machineName || ''}">
+        <img src="/uploads/${p.image || 'default.png'}">
       </div>
 
       <div class="product-info">
-        <h3 style="color:#0a7cff;font-weight:bold;">№ ${i+1}</h3>
-        <p>Seriya raqami: <span style="color:red;">${p.serial || ''}</span></p>
-        <p class="description">Ro'yxatga oluvchi: <span style="color:red;">${p.name || ''}</span></p>
+        <h3 style="color:#0a7cff;font-weight:bold;">№ ${i + 1}</h3>
+        <p>Seriya raqami: <span style="color:red;">${p.serial}</span></p>
+        <p>Ro'yxatga oluvchi: <span style="color:red;">${p.name}</span></p>
 
         <div style="display:flex; gap:10px;">
-          <button class="btn view-btn"><i class="fa-solid fa-print fa-bounce"></i> Print</button>
+          <button class="btn view-btn">🖨 Print</button>
 
           ${p.user === currentUserId ? `
-          <div style="display:flex; gap:10px;">
-            <div class="comment" data-id="${p._id}">
-              <span class="comment-text">${p.comment || ''}</span>
-              <button class="edit-comment-btn"><i class="fa-regular fa-pen-to-square fa-fade"></i>Edit</button>
-            </div>
             <form action="/products/delete/${p._id}" method="post">
-              <button class="btn delete-btn"><i class="fa-solid fa-trash-can fa-beat-fade"></i>Delete</button>
+              <button class="btn delete-btn">🗑 Delete</button>
             </form>
-          </div>` : ''}
+          ` : ''}
         </div>
 
-        <small>${new Date(p.date).toLocaleDateString()}</small>
+        <small>${new Date(p.date).toLocaleDateString('uz-UZ')}</small>
       </div>
     </div>
   `).join('');
@@ -100,74 +89,82 @@ evtSource.onmessage = (e) => {
   attachEvents();
 }
 
-// PRINT + COMMENT
 function attachEvents() {
   document.querySelectorAll('.view-btn').forEach(btn => {
     btn.onclick = () => {
-      const card = btn.closest('.product-card');
-      const index = [...document.querySelectorAll('.product-card')].indexOf(card) + 1;
-      const serial = card.dataset.serial || '';
-      const name = card.dataset.name || '';
-      const date = new Date(card.dataset.date).toLocaleDateString('uz-UZ');
-      const url = card.dataset.url;
-
+      const cards = Array.from(document.querySelectorAll('.product-card'));
       const w = window.open('', '_blank');
+      
       w.document.write(`
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Print Sticker</title>
+<title>Stickers</title>
 <style>
-body { font-family: Arial; margin:0; padding:0; }
-.sticker { width:2.37in; height:1.60in; border:1px solid #000; padding:0.05in; display:flex; justify-content:space-between; align-items:center; box-sizing:border-box;}
-.info { font-size:5pt; line-height:1.2; }
-.info p { margin:1px 0; }
-.qr { width:1in; height:1in; }
-button.print-btn { margin-top:5px; padding:4px 8px; font-size:10pt; }
+body {
+  margin:0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:10px;
+  font-family:Arial,sans-serif;
+}
+.sticker {
+  width:2.37in;
+  height:1.60in;
+  border:1px solid #000;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:5px;
+  box-sizing:border-box;
+  flex-direction:row;
+}
+.info {
+  font-size:8pt;
+  line-height:1.2;
+}
+.qr {
+  width:96px;
+  height:96px;
+}
+@media print {
+  body { gap:0; padding:0; }
+  .sticker { page-break-inside: avoid; }
+}
 </style>
 </head>
 <body>
-<div class="sticker">
-  <div class="info">
-  <p style="display:flex; justify-content:center;">Best Tex</p>
-    <p><b>№:</b> ${index}</p>
-    <p><b>Seriya raqami:</b> ${serial}</p>
-    <p><b>Ro'yxatga oluvchi:</b> ${name}</p>
-    <p><b>Sana:</b> ${date}</p>
-  </div>
-  <div class="qr" id="qr"></div>
-</div>
-<button class="print-btn" onclick="window.print()">Print</button>
+${cards.map(card => {
+  const serial = card.dataset.serial || '';
+  const name = card.dataset.name || '';
+  const date = new Date(card.dataset.date).toLocaleDateString('uz-UZ') || '';
+  const url = card.dataset.url || '';
+  return `
+  <div class="sticker">
+    <div class="info">
+      <b>Best Tex</b><br>
+      Seriya: ${serial}<br>
+      Ism: ${name}<br>
+      Sana: ${date}
+    </div>
+    <div class="qr" id="qr-${serial}"></div>
+  </div>`;
+}).join('')}
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"><\/script>
 <script>
-new QRCode(document.getElementById("qr"), {
-  text: "${url}",
-  width: 96,
-  height: 96
-})
+${cards.map(card => {
+  const serial = card.dataset.serial || '';
+  const url = card.dataset.url || '';
+  return `new QRCode(document.getElementById("qr-${serial}"), { text: "${url}", width: 96, height: 96 });`;
+}).join('')}
+window.print();
 <\/script>
 </body>
 </html>
-      `)
-    }
-  });
-
-  document.querySelectorAll('.edit-comment-btn').forEach(btn => {
-    btn.onclick = async () => {
-      const div = btn.parentElement;
-      const id = div.dataset.id;
-      const text = prompt('Izoh:', div.querySelector('.comment-text').innerText);
-      if (!text) return;
-
-      await fetch('/products/comment/' + id, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({comment:text})
-      })
+      `);
     }
   });
 }
-
-attachEvents();
 </script>

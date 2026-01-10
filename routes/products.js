@@ -16,19 +16,41 @@ const upload = multer({ dest: 'uploads/' })
 // HOME
 // ------------------------
 router.get('/', async (req, res) => {
-  try {
-    const products = await Product.find().sort({ date: -1 }).lean()
-    res.render('home', {
-      title: 'Mashinalar tizimi || Milana',
-      products,
-      token: !!req.cookies.token,
-      userId: req.userId || null
-    })
-  } catch (err) {
-    console.error(err)
-    res.status(500).send('Server error')
-  }
+  const products = await Product.find().sort({ date: -1 }).lean()
+  res.render('home', {
+    products,
+    userId: req.userId || null
+  })
 })
+
+// SSE
+router.get('/events', async (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream')
+  res.setHeader('Cache-Control', 'no-cache')
+  res.setHeader('Connection', 'keep-alive')
+
+  const send = async () => {
+    const products = await Product.find().sort({ date: -1 }).lean()
+    res.write(`data: ${JSON.stringify({
+      products,
+      baseUrl: `${req.protocol}://${req.get('host')}`,
+      currentUserId: req.userId
+    })}\n\n`)
+  }
+
+  send()
+  const timer = setInterval(send, 3000)
+  req.on('close', () => clearInterval(timer))
+})
+
+// QR orqali ochiladigan sahifa
+router.get('/products/:id', async (req, res) => {
+  const product = await Product.findById(req.params.id).lean()
+  if (!product) return res.status(404).send('Topilmadi')
+
+  res.render('product-single', { product })
+})
+
 
 // ------------------------
 // SSE
@@ -36,19 +58,27 @@ router.get('/', async (req, res) => {
 router.get('/events', async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache')
+  res.setHeader('Connection', 'keep-alive')
+
+  const baseUrl =
+    process.env.BASE_URL ||
+    `${req.protocol}://${req.get('host')}`
 
   const sendData = async () => {
     const products = await Product.find().sort({ date: -1 }).lean()
-    const data = {
+    res.write(`data: ${JSON.stringify({
       products,
-      currentUserId: req.userId || null
-    }
-    res.write(`data: ${JSON.stringify(data)}\n\n`)
+      currentUserId: req.userId || null,
+      baseUrl
+    })}\n\n`)
   }
 
+  await sendData()
   const interval = setInterval(sendData, 3000)
+
   req.on('close', () => clearInterval(interval))
 })
+
 
 // ------------------------
 // ADD PRODUCT

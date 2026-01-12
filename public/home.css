@@ -13,7 +13,8 @@ body {
   justify-content: flex-start; /* markaz emas, boshlang‘ichdan boshlab */
   margin-left: 290px; /* shu bilan o‘ngga suriladi */
   max-width: 1600px;
-  margin-top: 400px;
+  margin-top: 500px;
+
 }
 
 .product-card {

@@ -5,11 +5,11 @@ import dotenv from 'dotenv'
 import flash from 'connect-flash'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
+import jwt from 'jsonwebtoken'
 
 import authRoutes from './routes/auth.js'
 import productsRoutes from './routes/products.js'
-import varMiddleware from './middleware/var.js'
-
+import User from './models/User.js'
 
 dotenv.config()
 const app = express()
@@ -28,6 +28,9 @@ const hbs = create({
     },
     formatDate(date) {
       return new Date(date).toLocaleDateString('uz-UZ')
+    },
+    gte(a, b) {
+      return a >= b
     }
   }
 })
@@ -53,11 +56,36 @@ app.use(
   })
 )
 
-
-
-
 app.use(flash())
-app.use(varMiddleware)
+
+// ------------------------
+// GLOBAL AUTH
+// ------------------------
+app.use(async (req, res, next) => {
+  const token = req.cookies?.token
+  res.locals.token = false
+  res.locals.userId = null
+  res.locals.user = null
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_TOKEN)
+      const user = await User.findById(decoded.userId).lean()
+
+      if (user) {
+        res.locals.token = true
+        res.locals.userId = user._id.toString()
+        res.locals.user = user
+        req.userId = user._id
+        req.user = user
+      }
+    } catch {
+      res.locals.token = false
+    }
+  }
+
+  next()
+})
 
 // ------------------------
 // ROUTES
@@ -77,7 +105,7 @@ mongoose
   })
 
 // ------------------------
-// SERVER (LOCAL + LAN)
+// SERVER
 // ------------------------
 const PORT = 3100
 app.listen(PORT, '0.0.0.0', () => {

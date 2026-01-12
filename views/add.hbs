@@ -1,39 +1,75 @@
-<form class="modern-form" action="/add" method="POST" enctype="multipart/form-data">
-  <h2>Yangi mashina qo'shish</h2>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Mahsulot qo'shish</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#f0f4ff,#dbe7ff); margin:0; padding:0; display:flex; justify-content:center; align-items:flex-start; min-height:100vh;">
 
+<div style="background:#fff; margin-top:50px; padding:40px 35px; border-radius:15px; box-shadow:0 8px 30px rgba(0,0,0,0.2); width:400px; transition: all 0.3s ease;">
+
+  <h1 style="text-align:center; color:#0a7cff; font-size:28px; margin-bottom:25px; font-weight:700;">Mahsulot qo'shish</h1>
+
+  <!-- Flash xatolik -->
   {{#if erroAddPath}}
-  <div role="alert">{{erroAddPath}}</div>
+  <p style="background:#ffe6e6; color:#d8000c; padding:12px; border-radius:8px; margin-bottom:20px; text-align:center; font-weight:600; font-size:14px; box-shadow:0 2px 8px rgba(255,0,0,0.2);">
+    {{erroAddPath}}
+  </p>
   {{/if}}
 
-  <div class="form-group">
-    <label>Rasm</label>
-    <input type="file" name="image" required />
-  </div>
+  <form action="/add" method="post" enctype="multipart/form-data" style="display:flex; flex-direction:column; gap:15px;">
 
-  <div class="form-group">
-    <label>Sana</label>
-    <input type="date" name="date" required />
-  </div>
+    <label style="font-weight:600; color:#333;">Ro'yxatga oluvchi:</label>
+    <input type="text" name="name" placeholder="Ism" required
+           style="padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; transition:0.3s; font-size:14px;"
+           onfocus="this.style.borderColor='#0a7cff'; this.style.boxShadow='0 0 8px rgba(10,124,255,0.4)';"
+           onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';">
 
-  <div class="form-group">
-    <label>Ism Familya</label>
-    <input type="text" name="name" required />
-  </div>
+    <label style="font-weight:600; color:#333;">Seriya raqami:</label>
+    <input type="text" name="serial" placeholder="Seriya raqami" required
+           style="padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; transition:0.3s; font-size:14px;"
+           onfocus="this.style.borderColor='#0a7cff'; this.style.boxShadow='0 0 8px rgba(10,124,255,0.4)';"
+           onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';">
 
-  <div class="form-group">
-    <label>Tikuv mashina</label>
-    <input type="text" name="serial" placeholder="Jack" required />
-  </div>
+    <label style="font-weight:600; color:#333;">Mashina nomi:</label>
+    <input type="text" name="machineName" placeholder="Mashina nomi" required
+           style="padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; transition:0.3s; font-size:14px;"
+           onfocus="this.style.borderColor='#0a7cff'; this.style.boxShadow='0 0 8px rgba(10,124,255,0.4)';"
+           onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';">
 
-  <div class="form-group">
-    <label>Model raqami</label>
-    <input type="text" name="serial" placeholder="JK-T1377E" required />
-  </div>
+    <label style="font-weight:600; color:#333;">Model raqami:</label>
+    <input type="text" name="modelNumber" placeholder="Model raqami" required
+           style="padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; transition:0.3s; font-size:14px;"
+           onfocus="this.style.borderColor='#0a7cff'; this.style.boxShadow='0 0 8px rgba(10,124,255,0.4)';"
+           onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';">
 
-  <div class="form-group">
-    <label>Seriya raqami</label>
-    <input type="text" name="serial" placeholder="23043502" required />
-  </div>
+    <label style="font-weight:600; color:#333;">Sana:</label>
+    <input type="date" name="date" required
+           style="padding:10px; border:1px solid #ccc; border-radius:8px; outline:none; transition:0.3s; font-size:14px;"
+           onfocus="this.style.borderColor='#0a7cff'; this.style.boxShadow='0 0 8px rgba(10,124,255,0.4)';"
+           onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';">
 
-  <button type="submit">Saqlash</button>
-</form>
+    <label style="font-weight:600; color:#333;">Rasm:</label>
+    <input type="file" name="image" accept="image/*"
+           style="padding:8px; border:1px solid #ccc; border-radius:8px; outline:none; font-size:14px; transition:0.3s;"
+           onfocus="this.style.borderColor='#0a7cff'; this.style.boxShadow='0 0 8px rgba(10,124,255,0.4)';"
+           onblur="this.style.borderColor='#ccc'; this.style.boxShadow='none';">
+
+    <button type="submit" style="margin-top:10px; padding:14px; background:#0a7cff; color:#fff; font-weight:700; border:none; border-radius:10px; cursor:pointer; font-size:16px; transition:0.3s; box-shadow:0 4px 10px rgba(10,124,255,0.3);"
+            onmouseover="this.style.background='#005ecb'; this.style.boxShadow='0 6px 15px rgba(10,124,255,0.4)';"
+            onmouseout="this.style.background='#0a7cff'; this.style.boxShadow='0 4px 10px rgba(10,124,255,0.3)';">
+      Qo'shish
+    </button>
+
+  </form>
+
+  <a href="/" style="display:inline-block; margin-top:25px; color:#0a7cff; font-weight:600; text-decoration:none; transition:0.2s;"
+     onmouseover="this.style.textDecoration='underline';"
+     onmouseout="this.style.textDecoration='none';">
+    ← Ortga
+  </a>
+
+</div>
+
+</body>
+</html>

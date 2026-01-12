@@ -7,7 +7,8 @@
          data-serial="{{serial}}"
          data-name="{{name}}"
          data-date="{{date}}"
-         data-url="{{baseUrl}}/products/{{_id}}">
+         data-url="{{baseUrl}}/products/{{_id}}"
+         data-rating="{{rating}}">
 
       <div class="image-wrapper">
         <img src="/uploads/{{image}}" alt="{{machineName}}">
@@ -18,7 +19,16 @@
         <p>Seriya raqami: <span style="color:red;">{{serial}}</span></p>
         <p>Ro'yxatga oluvchi: <span style="color:red;">{{name}}</span></p>
 
-        <div style="display:flex; gap:10px;">
+        <!-- ⭐ RATING -->
+        <div class="rating" data-id="{{_id}}">
+          <span class="star {{#if (gte rating 1)}}active{{/if}}" data-star="1">★</span>
+          <span class="star {{#if (gte rating 2)}}active{{/if}}" data-star="2">★</span>
+          <span class="star {{#if (gte rating 3)}}active{{/if}}" data-star="3">★</span>
+          <span class="star {{#if (gte rating 4)}}active{{/if}}" data-star="4">★</span>
+          <span class="star {{#if (gte rating 5)}}active{{/if}}" data-star="5">★</span>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:5px;">
           <button class="btn view-btn"><i class="fa-solid fa-print"></i> Print</button>
 
           {{#ifequal user ../userId}}
@@ -44,6 +54,26 @@
   {{/if}}
 </div>
 
+<!-- CSS for stars -->
+<style>
+.rating {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+}
+.star {
+  font-size: 20px;
+  color: #ccc;
+  transition: 0.2s;
+}
+.star.active {
+  color: gold;
+}
+.star:hover {
+  transform: scale(1.2);
+}
+</style>
+
 <script>
 const evtSource = new EventSource('/events');
 
@@ -60,7 +90,8 @@ evtSource.onmessage = (e) => {
       data-serial="${p.serial || ''}"
       data-name="${p.name || ''}"
       data-date="${p.date || ''}"
-      data-url="${baseUrl}/products/${p._id}">
+      data-url="${baseUrl}/products/${p._id}"
+      data-rating="${p.rating || 0}">
 
       <div class="image-wrapper">
         <img src="/uploads/${p.image || 'default.png'}">
@@ -71,7 +102,14 @@ evtSource.onmessage = (e) => {
         <p>Seriya raqami: <span style="color:red;">${p.serial}</span></p>
         <p>Ro'yxatga oluvchi: <span style="color:red;">${p.name}</span></p>
 
-        <div style="display:flex; gap:10px;">
+        <!-- ⭐ RATING -->
+        <div class="rating" data-id="${p._id}">
+          ${[1,2,3,4,5].map(n => `
+            <span class="star ${p.rating >= n ? 'active' : ''}" data-star="${n}">★</span>
+          `).join('')}
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:5px;">
           <button class="btn view-btn">🖨 Print</button>
 
           ${p.user === currentUserId ? `
@@ -87,8 +125,12 @@ evtSource.onmessage = (e) => {
   `).join('');
 
   attachEvents();
+  initRatings(currentUserId); // currentUserId null bo‘lsa rating disable bo‘ladi
 }
 
+// ------------------------
+// PRINT FUNCTION
+// ------------------------
 function attachEvents() {
   document.querySelectorAll('.view-btn').forEach(btn => {
     btn.onclick = () => {
@@ -102,37 +144,11 @@ function attachEvents() {
 <meta charset="UTF-8">
 <title>Stickers</title>
 <style>
-body {
-  margin:0;
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  padding:10px;
-  font-family:Arial,sans-serif;
-}
-.sticker {
-  width:2.37in;
-  height:1.60in;
-  border:1px solid #000;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:5px;
-  box-sizing:border-box;
-  flex-direction:row;
-}
-.info {
-  font-size:8pt;
-  line-height:1.2;
-}
-.qr {
-  width:96px;
-  height:96px;
-}
-@media print {
-  body { gap:0; padding:0; }
-  .sticker { page-break-inside: avoid; }
-}
+body { margin:0; display:flex; flex-wrap:wrap; gap:10px; padding:10px; font-family:Arial,sans-serif; }
+.sticker { width:2.37in; height:1.60in; border:1px solid #000; display:flex; justify-content:space-between; align-items:center; padding:5px; box-sizing:border-box; flex-direction:row; }
+.info { font-size:8pt; line-height:1.2; }
+.qr { width:96px; height:96px; }
+@media print { body { gap:0; padding:0; } .sticker { page-break-inside: avoid; } }
 </style>
 </head>
 <body>
@@ -166,5 +182,33 @@ window.print();
       `);
     }
   });
+}
+
+// ------------------------
+// ⭐ RATING FUNCTION
+// ------------------------
+function initRatings(currentUserId) {
+  if (!currentUserId) return; // logout bo'lsa click disable
+
+  document.querySelectorAll('.rating').forEach(box => {
+    const productId = box.dataset.id
+
+    box.querySelectorAll('.star').forEach(star => {
+      star.style.cursor = 'pointer';
+      star.onclick = async () => {
+        const value = star.dataset.star
+
+        await fetch(`/products/rate/${productId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rating: value })
+        })
+
+        box.querySelectorAll('.star').forEach(s => {
+          s.classList.toggle('active', s.dataset.star <= value)
+        })
+      }
+    })
+  })
 }
 </script>

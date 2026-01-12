@@ -5,10 +5,6 @@ import Counter from '../models/Counter.js'
 import userMiddleware from '../middleware/user.js'
 import ExcelJS from 'exceljs'
 
-
-
-
-
 const router = Router()
 const upload = multer({ dest: 'uploads/' })
 
@@ -22,35 +18,6 @@ router.get('/', async (req, res) => {
     userId: req.userId || null
   })
 })
-
-// SSE
-router.get('/events', async (req, res) => {
-  res.setHeader('Content-Type', 'text/event-stream')
-  res.setHeader('Cache-Control', 'no-cache')
-  res.setHeader('Connection', 'keep-alive')
-
-  const send = async () => {
-    const products = await Product.find().sort({ date: -1 }).lean()
-    res.write(`data: ${JSON.stringify({
-      products,
-      baseUrl: `${req.protocol}://${req.get('host')}`,
-      currentUserId: req.userId
-    })}\n\n`)
-  }
-
-  send()
-  const timer = setInterval(send, 3000)
-  req.on('close', () => clearInterval(timer))
-})
-
-// QR orqali ochiladigan sahifa
-router.get('/products/:id', async (req, res) => {
-  const product = await Product.findById(req.params.id).lean()
-  if (!product) return res.status(404).send('Topilmadi')
-
-  res.render('product-single', { product })
-})
-
 
 // ------------------------
 // SSE
@@ -75,10 +42,8 @@ router.get('/events', async (req, res) => {
 
   await sendData()
   const interval = setInterval(sendData, 3000)
-
   req.on('close', () => clearInterval(interval))
 })
-
 
 // ------------------------
 // ADD PRODUCT
@@ -127,7 +92,8 @@ router.post('/add', userMiddleware, upload.single('image'), async (req, res) => 
     res.redirect('/')
   } catch (err) {
     console.error(err)
-    res.status(500).send(err.message)
+    req.flash('erroAddPath', 'Xatolik yuz berdi!')
+    res.redirect('/add')
   }
 })
 
@@ -139,6 +105,24 @@ router.post('/products/comment/:id', async (req, res) => {
     await Product.findByIdAndUpdate(req.params.id, {
       comment: req.body.comment
     })
+    res.json({ success: true })
+  } catch (err) {
+    res.status(500).json({ success: false })
+  }
+})
+
+// ------------------------
+// RATE UPDATE
+// ------------------------
+router.post('/products/rate/:id', async (req, res) => {
+  try {
+    const { rating } = req.body
+    if (!req.userId) return res.status(401).json({ success: false })
+
+    await Product.findByIdAndUpdate(req.params.id, {
+      rating: Number(rating)
+    })
+
     res.json({ success: true })
   } catch (err) {
     res.status(500).json({ success: false })
@@ -165,7 +149,6 @@ router.get('/products/:id', async (req, res) => {
     product
   })
 })
-
 
 // ------------------------
 // EXPORT EXCEL
@@ -215,6 +198,5 @@ router.get('/export/excel', async (req, res) => {
     res.status(500).send('Excel error')
   }
 })
-
 
 export default router

@@ -9,7 +9,14 @@ const ProductSchema = new Schema({
   serial: { type: String, required: true, unique: true },
   machineName: { type: String, required: true, trim: true },   // 🔹 qo‘shildi
   modelNumber: { type: String, required: true, trim: true },  // 🔹 qo‘shildi
-  comment: { type: String, default: '' }
+  comment: { type: String, default: '' },
+  rating: {
+  type: Number,
+  default: 0,
+  min: 0,
+  max: 5
+}
+
 }, { timestamps: true })
 
 export default model('Product', ProductSchema)
